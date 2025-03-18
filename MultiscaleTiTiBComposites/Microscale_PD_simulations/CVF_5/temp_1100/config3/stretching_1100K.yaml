@@ -1,0 +1,296 @@
+Peridigm:
+
+#     Description
+#       Simulation of an elastic tensile bar subjected to 0.5% strain.
+#       Engineering strain is estimated by tracking the elongation of a
+#       segment of the bar using the Nearest_Point_Data compute class.
+#       Engineering stress is estimated by tracking the reaction forces
+#       in the end segments of the bar using the Block_Data compute class.
+#       Using the data computed by the compute classes, engineering strain
+#       can be determined as the change in length divided by the initial
+#       length, and engineering stress as the force in an end segment
+#       divided by the initial cross-sectional area.
+#
+#	For style micro, these are the units:
+#	mass = picograms
+#	distance = micrometers
+#	time = microseconds
+#	energy = picogram-micrometer^2/microsecond^2
+#	velocity = micrometers/microsecond
+#	force = picogram-micrometer/microsecond^2
+#	torque = picogram-micrometer^2/microsecond^2
+#	temperature = Kelvin
+#	pressure = picogram/(micrometer*microsecond^2)
+#	dynamic viscosity = picogram/(micrometer-microsecond)
+#	charge = picocoulombs (1.6021765e-7 is a proton)
+#	dipole = picocoulomb-micrometer
+#	electric field = volt/micrometer
+#	density = picograms/micrometer^dim
+
+  Verbose: false
+  Discretization:
+      Type: "Text File"
+      Input Mesh File: "geo.txt"
+
+  Materials:
+      Material_Ti:
+        Material Model: "Elastic Plastic"
+        Density: 4.357
+        Bulk Modulus: 6174629.841
+        Shear Modulus: 2882762.468
+        Yield Stress: 148356.8476
+        Apply Shear Correction Factor: True
+        Disable Plasticity: False
+      Material_TiB:
+        Material Model: "Elastic Plastic"
+        Density: 4.520
+        Bulk Modulus: 124443013.1
+        Shear Modulus: 105297934.1
+        Yield Stress: 14430606.25
+        Apply Shear Correction Factor: True
+        Disable Plasticity: False
+
+  Damage Models:
+      Material Ti Fracture:
+        Damage Model: "Critical Stretch"
+        Critical Stretch: 0.137223115
+      Material TiB Fracture:
+        Damage Model: "Critical Stretch"
+        Critical Stretch: 0.174642105
+
+  Blocks:
+      My Block_1:
+        Block Names: "block_1 block_3 block_5 block_7 block_9 block_11 block_13 block_15 block_17"
+        Material: "Material_Ti"
+        Damage Model: "Material Ti Fracture"
+        Horizon: 3.6
+      My Block_2:
+        Block Names: "block_2 block_4 block_6 block_8 block_10 block_14 block_18"
+        Material: "Material_TiB"
+        Damage Model: "Material TiB Fracture"
+        Horizon: 3.6
+
+  Boundary Conditions:
+      Node Set One: "node_set_1.txt"
+      Node Set Two: "node_set_2.txt"
+      Node Set Three: "node_set_3.txt"
+      Node Set Four: "node_set_4.txt"
+      Node Set Five: "node_set_5.txt"
+      Prescribed Displacement Right:
+        Type: "Prescribed Displacement"
+        Node Set: "Node Set Two"
+        Coordinate: "y"
+        Value: "y*0.2*t"
+      Prescribed Displacement Fix Left:
+        Type: "Prescribed Displacement"
+        Node Set: "Node Set One"
+        Coordinate: "y"
+        Value: "y*0.2*t"
+      Prescribed Displacement Fix All:
+        Type: "Prescribed Displacement"
+        Node Set: "Node Set Five"
+        Coordinate: "z"
+        Value: "0.0"
+
+  Solver:
+      Initial Time: 0.0
+      Final Time: 1.0
+      Verlet:
+          Fixed dt: 0.00015
+          Numerical Damping: 0.002
+          
+  Compute Class Parameters:
+      Strain Gage Top Initial Position:
+        Compute Class: "Nearest_Point_Data"
+        X: 40.1
+        Y: 20.1
+        Z: 20.1
+        Variable: "Model_Coordinates"
+        Output Label: "Top_Position"
+        Verbose: true
+      Strain Gage Bottom Initial Position:
+        Compute Class: "Nearest_Point_Data"
+        X: 0.1
+        Y: 20.1
+        Z: 20.1
+        Variable: "Model_Coordinates"
+        Output Label: "Bottom_Position"
+        Verbose: true
+      Strain Gage Left Initial Position:
+        Compute Class: "Nearest_Point_Data"
+        X: 20.1
+        Y: 0.1
+        Z: 20.1
+        Variable: "Model_Coordinates"
+        Output Label: "Left_Position"
+        Verbose: true
+      Strain Gage Right Initial Position:
+        Compute Class: "Nearest_Point_Data"
+        X: 20.1
+        Y: 40.1
+        Z: 20.1
+        Variable: "Model_Coordinates"
+        Output Label: "Right_Position"
+        Verbose: true
+################################################################
+      Strain Gage Top Displacement:
+        Compute Class: "Nearest_Point_Data"
+        X: 40.1
+        Y: 20.1
+        Z: 20.1
+        Variable: "Displacement"
+        Output Label: "Top_Displacement"
+        Verbose: true
+      Strain Gage Bottom Displacement:
+        Compute Class: "Nearest_Point_Data"
+        X: 0.1
+        Y: 20.1
+        Z: 20.1
+        Variable: "Displacement"
+        Output Label: "Bottom_Displacement"
+        Verbose: true
+      Strain Gage Left Displacement:
+        Compute Class: "Nearest_Point_Data"
+        X: 20.1
+        Y: 0.1
+        Z: 20.1
+        Variable: "Displacement"
+        Output Label: "Left_Displacement"
+        Verbose: true
+      Strain Gage Right Displacement:
+        Compute Class: "Nearest_Point_Data"
+        X: 20.1
+        Y: 40.1
+        Z: 20.1
+        Variable: "Displacement"
+        Output Label: "Right_Displacement"
+        Verbose: true
+###########################################################
+      Top Reaction Force_1:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_9"
+        Variable: "Force"
+        Output Label: "Top_Reaction_Force_1"
+      Top Reaction Force_2:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_10"
+        Variable: "Force"
+        Output Label: "Top_Reaction_Force_2"
+      Bottom Reaction Force_1:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_7"
+        Variable: "Force"
+        Output Label: "Bottom_Reaction_Force_1"
+      Bottom Reaction Force_2:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_8"
+        Variable: "Force"
+        Output Label: "Bottom_Reaction_Force_2"
+      Left Reaction Force_1:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_3"
+        Variable: "Force"
+        Output Label: "Left_Reaction_Force_1"
+      Left Reaction Force_2:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_4"
+        Variable: "Force"
+        Output Label: "Left_Reaction_Force_2"
+      Right Reaction Force_1:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_5"
+        Variable: "Force"
+        Output Label: "Right_Reaction_Force_1"
+      Right Reaction Force_2:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_6"
+        Variable: "Force"
+        Output Label: "Right_Reaction_Force_2"
+###########################################################
+      Edge1 Reaction Force_1:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_11"
+        Variable: "Force"
+        Output Label: "Edge1_Reaction_Force_1"
+      Edge2 Reaction Force_1:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_13"
+        Variable: "Force"
+        Output Label: "Edge2_Reaction_Force_1"
+      Edge2 Reaction Force_2:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_14"
+        Variable: "Force"
+        Output Label: "Edge2_Reaction_Force_2"
+      Edge3 Reaction Force_1:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_15"
+        Variable: "Force"
+        Output Label: "Edge3_Reaction_Force_1"
+      Edge4 Reaction Force_1:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_17"
+        Variable: "Force"
+        Output Label: "Edge4_Reaction_Force_1"
+      Edge4 Reaction Force_2:
+        Compute Class: "Block_Data"
+        Calculation Type: "Sum"
+        Block: "block_18"
+        Variable: "Force"
+        Output Label: "Edge4_Reaction_Force_2"
+
+  Output:
+      Output File Type: "ExodusII"
+      Output Filename: "Stretching"
+      Output Frequency: 1
+      Output Variables:
+        Damage: true
+        Displacement: true
+        Velocity: true
+        Element_Id: true
+        Proc_Num: true
+        Force_Density: true
+        Force: true
+        Volume: true
+        Deformation_Gradient: true
+        Radius: true
+        Number_Of_Neighbors: true
+        Neighborhood_Volume: true
+########################################################
+        Top_Position: true
+        Bottom_Position: true
+        Left_Position: true
+        Right_Position: true
+        Top_Displacement: true
+        Bottom_Displacement: true
+        Left_Displacement: true
+        Right_Displacement: true
+#########################################################
+        Top_Reaction_Force_1: true
+        Top_Reaction_Force_2: true
+        Bottom_Reaction_Force_1: true
+        Bottom_Reaction_Force_2: true
+        Left_Reaction_Force_1: true
+        Left_Reaction_Force_2: true
+        Right_Reaction_Force_1: true
+        Right_Reaction_Force_2: true
+#########################################################
+        Edge1_Reaction_Force_1: true
+        Edge2_Reaction_Force_1: true
+        Edge2_Reaction_Force_2: true
+        Edge3_Reaction_Force_1: true
+        Edge4_Reaction_Force_1: true
+        Edge4_Reaction_Force_2: true

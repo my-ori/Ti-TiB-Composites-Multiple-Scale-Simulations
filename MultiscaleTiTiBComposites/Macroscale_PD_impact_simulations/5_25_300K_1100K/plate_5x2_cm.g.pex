@@ -1,0 +1,10 @@
+Input FEM file                   = plate_5x2_cm.g
+LB file                          = plate_5x2_cm.g.nem
+Parallel Results File Base Name  = plate_5x2_cm
+File Extension for Spread Files  = .g
+Number of Processors             = 12 
+------------------------------------------------------------
+                Parallel I/O section
+------------------------------------------------------------
+Parallel Disk Info= number=1, offset=1, zeros, nosubdirectory
+Parallel file location = root=/mnt/c/cyb/SecondPaper/Simulations/plate/cm_system_units/25_5_300K_1100K/, subdir=.

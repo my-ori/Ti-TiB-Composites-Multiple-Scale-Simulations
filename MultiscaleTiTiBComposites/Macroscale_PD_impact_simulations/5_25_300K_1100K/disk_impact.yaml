@@ -1,0 +1,191 @@
+Peridigm:
+
+# NEW: kg N mm s
+# 1GPa = 1000 MPa
+# 1kg/m^3 = 1*10^-9 kg/mm^3
+
+
+  Discretization:
+      Type: "Exodus"
+      Input Mesh File: "plate_5x2_cm.g"
+
+  Materials:
+#25%_1100
+      layer_1_material:
+        Material Model: "Elastic Plastic Hardening"
+        Density: 0.0000045e6
+        Bulk Modulus: 22287.59183e7
+        Shear Modulus: 13372.5551e7
+        Yield Stress: 1755.147857e7
+        Hardening Modulus: 3357737.315e7
+        Apply Shear Correction Factor: True
+        Disable Plasticity: False
+#20%_900
+      layer_2_material:
+        Material Model: "Elastic Plastic Hardening"
+        Density: 0.0000045e6
+        Bulk Modulus: 47036.01545e7
+        Shear Modulus: 28221.60927e7
+        Yield Stress: 761.6364633e7
+        Hardening Modulus: 5051303.493e7
+        Apply Shear Correction Factor: True
+        Disable Plasticity: False
+#15%_700
+      layer_3_material:
+        Material Model: "Elastic Plastic Hardening"
+        Density: 0.0000045e6
+        Bulk Modulus: 62157.51885e7
+        Shear Modulus: 37294.51131e7
+        Yield Stress: 774.9310342e7
+        Hardening Modulus: 3009369.56e7
+        Apply Shear Correction Factor: True
+        Disable Plasticity: False
+#10%_500
+      layer_4_material:
+        Material Model: "Elastic Plastic Hardening"
+        Density: 0.0000045e6
+        Bulk Modulus: 78070.17544e7
+        Shear Modulus: 46842.10526e7
+        Yield Stress: 729.5081967e7
+        Hardening Modulus: 947620.58e7
+        Apply Shear Correction Factor: True
+        Disable Plasticity: False
+#5%_300
+      layer_5_material:
+        Material Model: "Elastic Plastic Hardening"
+        Density: 0.0000045e6
+        Bulk Modulus: 76732.31502e7
+        Shear Modulus: 46039.38901e7
+        Yield Stress: 800.9721572e7
+        Hardening Modulus: 425330.0e7
+        Apply Shear Correction Factor: True
+        Disable Plasticity: False
+#ball_chagne!!
+      Cubic_material:
+          Material Model: "Elastic"
+          Density: 20.0
+          Bulk Modulus: 93152.85521e8
+          Shear Modulus: 55891.71312e8
+
+  Damage Models:
+#25%_1100
+      layer_1_damage:
+          Damage Model: "Critical Stretch"
+          Critical Stretch: 0.101565435
+#20%_900
+      layer_2_damage:
+          Damage Model: "Critical Stretch"
+          Critical Stretch: 0.088227927
+#15%_700
+      layer_3_damage:
+          Damage Model: "Critical Stretch"
+          Critical Stretch: 0.068659987
+#10%_500
+      layer_4_damage:
+          Damage Model: "Critical Stretch"
+          Critical Stretch: 0.060613651
+#5%_300
+      layer_5_damage:
+          Damage Model: "Critical Stretch"
+          Critical Stretch: 0.06956794
+          
+  Blocks:
+      layer_1_block:
+          Block Names: "block_1"
+          Material: "layer_5_material"
+          Damage Model: "layer_5_damage"
+          Horizon: 0.31
+      layer_2_block:
+          Block Names: "block_2"
+          Material: "layer_4_material"
+          Damage Model: "layer_4_damage"
+          Horizon: 0.31
+      layer_3_block:
+          Block Names: "block_3"
+          Material: "layer_3_material"
+          Damage Model: "layer_3_damage"
+          Horizon: 0.31
+      layer_4_block:
+          Block Names: "block_4"
+          Material: "layer_2_material"
+          Damage Model: "layer_2_damage"
+          Horizon: 0.31
+      layer_5_block:
+          Block Names: "block_5"
+          Material: "layer_1_material"
+          Damage Model: "layer_1_damage"
+          Horizon: 0.31
+      Cubic_Block:
+          Block Names: "block_6"
+          Material: "Cubic_material"
+          Horizon: 0.31
+  Contact:
+      Search Radius: 0.055
+      Search Frequency: 1
+      Models:
+          My Contact Model:
+              Contact Model: "Short Range Force"
+              Contact Radius: 0.055
+              Spring Constant: 12.0e13
+      Interactions:
+          Interaction 1:
+              First Block: "block_1"
+              Second Block: "block_6"
+              Contact Model: "My Contact Model"
+          Interaction 2:
+              First Block: "block_2"
+              Second Block: "block_6"
+              Contact Model: "My Contact Model"
+          Interaction 3:
+              First Block: "block_3"
+              Second Block: "block_6"
+              Contact Model: "My Contact Model"
+          Interaction 4:
+              First Block: "block_4"
+              Second Block: "block_6"
+              Contact Model: "My Contact Model"
+          Interaction 5:
+              First Block: "block_5"
+              Second Block: "block_6"
+              Contact Model: "My Contact Model"
+
+  Boundary Conditions:
+      Sphere Initial Velocity:
+          Type: "Initial Velocity"
+          Node Set: "nodelist_1"
+          Coordinate: "z"
+          Value: "-100000.0"
+
+  Solver:
+      Initial Time: 0.0
+      Final Time: 15.0e-5
+      Verlet:
+          Safety Factor: 0.8
+
+# Output file for full data set, disk_impact.e
+  Output_1:
+      Output File Type: "ExodusII"
+      Output Filename: "disk_impact"
+      Output Frequency: 1
+      Output Variables:
+          Displacement: true
+          Velocity: true
+          Element_Id: true
+          Proc_Num: true
+          Dilatation: true
+          Weighted_Volume: true
+          Force: true
+          Contact_Force: true
+          Damage: true
+          Number_Of_Neighbors: true
+          Radius: true
+
+# Output file for history data (global data), disk_impact.h
+  Output_2:
+      Output File Type: "ExodusII"
+      Output Filename: "disk_impact"
+      Output Frequency: 1
+      Output Variables:
+          Global_Kinetic_Energy: true
+          Global_Linear_Momentum: true
+          Global_Angular_Momentum: true
