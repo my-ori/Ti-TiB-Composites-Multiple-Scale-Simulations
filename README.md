@@ -26,9 +26,9 @@ Located in the macroscale folder, this section contains an example of FGL-1, as 
 
 This simulation runs on Peridigm using MPI for parallel execution.  
 
-**Microscale Simulation": mpirun -np 8 Peridigm stretching_300K.yaml  
+**Microscale Simulation**: mpirun -np 8 Peridigm stretching_300K.yaml  
 
-**Macroscale Simulation": mpirun -np 12 Peridigm disk_impact.yaml  
+**Macroscale Simulation**: mpirun -np 12 Peridigm disk_impact.yaml  
 
 ## Contact  
 For any issues or questions regarding the code or Peridigm installation, please contact the author:  
